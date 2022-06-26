@@ -25,7 +25,15 @@
           There are not in progress todos
         </p>
         <template x-for="todo in getInProgressTodos()">
-          <div class="todo-item">
+          <div class="todo-item" x-init="$watch('todo.editMode', value => {
+            if (todo.editMode) {
+              todo.oldText = todo.text;
+            } else {
+              if (todo.text.trim() === '') {
+                todo.text = todo.oldText;
+              }
+            }
+          })">
             <button @click="toggleComplete(todo.id)" class="toggler"></button>
             <span
               tabindex="0"
@@ -35,12 +43,12 @@
             ></span>
             <template x-if="todo.editMode">
               <input
-                x-data
                 x-init="$el.focus()"
                 type="text"
                 x-model="todo.text"
                 @blur="toggleEditMode(todo.id)"
                 @keyup.enter="toggleEditMode(todo.id)"
+                @keyup.esc="toggleEditMode(todo.id)"
               />
             </template>
 
@@ -71,8 +79,8 @@
       Alpine.data("todos", () => ({
         todoEl: "",
         todos: [
-          { id: 1, text: "Learn Alpine.js" },
-          { id: 2, text: "Try Alpine.js", complete: true },
+          { id: 1, oldText: "Learn Alpine.js", text: "Learn Alpine.js" },
+          { id: 2, oldText: "Try Alpine.js", text: "Try Alpine.js", complete: true },
         ],
 
         getCompleteTodos() {
