@@ -1,0 +1,33 @@
+html {
+  font-family: sans-serif;
+}
+
+p {
+  margin:  0;
+}
+
+.todo-item {
+  display:  flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.todo-item button.toggler {
+  width:  1rem;
+  height:  1rem;
+}
+
+.todo-item.complete button.toggler {
+  background-color:  green;
+}
+
+.todo-list {
+  margin-top: 1rem;
+}
+
+.empty-todos-message {
+  color:  gray;
+  font-size: 0.8rem;
+  
+}

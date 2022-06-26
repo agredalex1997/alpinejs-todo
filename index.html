@@ -1,0 +1,117 @@
+<html>
+  <head>
+    <title>Todo list with Alpine.js</title>
+    <script
+      defer
+      src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div x-data="todos">
+      <div>
+        <input
+          x-model="todoEl"
+          type="text"
+          placeholder="Buy apples"
+          @keyup.enter="addTodo"
+        />
+        <button type="button" @click="addTodo">Add</button>
+      </div>
+
+      <div class="todo-list">
+        <p>In progress</p>
+        <p x-show="getInProgressTodos().length < 1" class="empty-todos-message">
+          There are not in progress todos
+        </p>
+        <template x-for="todo in getInProgressTodos()">
+          <div class="todo-item">
+            <button @click="toggleComplete(todo.id)" class="toggler"></button>
+            <span
+              tabindex="0"
+              x-show="!todo.editMode"
+              x-text="todo.text"
+              @focus="toggleEditMode(todo.id)"
+            ></span>
+            <template x-if="todo.editMode">
+              <input
+                x-data
+                x-init="$el.focus()"
+                type="text"
+                x-model="todo.text"
+                @blur="toggleEditMode(todo.id)"
+                @keyup.enter="toggleEditMode(todo.id)"
+              />
+            </template>
+
+            <button type="button" @click="removeTodo(todo.id)">Delete</button>
+          </div>
+        </template>
+      </div>
+
+      <div class="todo-list">
+        <p>Complete</p>
+        <p x-show="getCompleteTodos().length < 1" class="empty-todos-message">
+          There are not completed todos
+        </p>
+        <template x-for="todo in getCompleteTodos()">
+          <div class="todo-item complete">
+            <button checked @click="toggleComplete(todo.id)" class="toggler">
+              ✔️
+            </button>
+            <span x-text="todo.text"></span>
+            <button type="button" @click="removeTodo(todo.id)">Delete</button>
+          </div>
+        </template>
+      </div>
+    </div>
+  </body>
+  <script>
+    document.addEventListener("alpine:init", () => {
+      Alpine.data("todos", () => ({
+        todoEl: "",
+        todos: [
+          { id: 1, text: "Learn Alpine.js" },
+          { id: 2, text: "Try Alpine.js", complete: true },
+        ],
+
+        getCompleteTodos() {
+          return this.todos.filter((todo) => todo.complete);
+        },
+
+        getInProgressTodos() {
+          return this.todos.filter((todo) => !todo.complete);
+        },
+
+        addTodo() {
+          if (!this.todoEl.trim()) {
+            alert("You can not add an empty todo!");
+            return;
+          }
+
+          this.todos.push({
+            id: this.todos.length + 1,
+            text: this.todoEl,
+            complete: false,
+            editMode: false,
+          });
+          this.todoEl = "";
+        },
+
+        removeTodo(id) {
+          this.todos = this.todos.filter((todo) => todo.id !== id);
+        },
+
+        toggleComplete(id) {
+          const todo = this.todos.find((todo) => todo.id === id);
+          todo.complete = !todo.complete;
+        },
+
+        toggleEditMode(id) {
+          const todo = this.todos.find((todo) => todo.id === id);
+          todo.editMode = !todo.editMode;
+        },
+      }));
+    });
+  </script>
+</html>
